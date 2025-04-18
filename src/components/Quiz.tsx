@@ -23,9 +23,9 @@ const Quiz: React.FC = () => {
     if (quizCore.hasNextQuestion()) {
       quizCore.nextQuestion();
       setCurrentQuestion(quizCore.getCurrentQuestion());
-      setSelectedAnswer(null); // Reset selected answer
+      setSelectedAnswer(null); 
     } else {
-      // No more questions
+
       setScore(quizCore.getScore());
       setIsCompleted(true);
     }
@@ -69,7 +69,7 @@ const Quiz: React.FC = () => {
           <h3>Selected Answer:</h3>
           <p>{selectedAnswer ?? 'No answer selected'}</p>
 
-          {/* Button logic */}
+          
           {quizCore.hasNextQuestion() ? (
             <button onClick={handleButtonClick} disabled={selectedAnswer === null}>
               Next Question
