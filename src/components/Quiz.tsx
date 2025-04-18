@@ -1,46 +1,50 @@
-import React, { useState } from 'react'
-import './Quiz.css'
-import QuizQuestion from '../core/QuizQuestion';
-
-interface QuizState {
-  questions: QuizQuestion[]
-  currentQuestionIndex: number
-  selectedAnswer: string | null
-  score: number
-}
+import React, { useState } from 'react';
+import './Quiz.css';
+import QuizCore from '../core/QuizCore';
+import Question from './Question';
+import AnswerOption from './AnswerOption';
 
 const Quiz: React.FC = () => {
-  const initialQuestions: QuizQuestion[] = [
-    {
-      question: 'What is the capital of France?',
-      options: ['London', 'Berlin', 'Paris', 'Madrid'],
-      correctAnswer: 'Paris',
-    },
-  ];
-  const [state, setState] = useState<QuizState>({
-    questions: initialQuestions,
-    currentQuestionIndex: 0,  // Initialize the current question index.
-    selectedAnswer: null,  // Initialize the selected answer.
-    score: 0,  // Initialize the score.
-  });
+  const [quizCore] = useState(new QuizCore());
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState(quizCore.getCurrentQuestion());
+  const [score, setScore] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const handleOptionSelect = (option: string): void => {
-    setState((prevState) => ({ ...prevState, selectedAnswer: option }));
-  }
-
+    setSelectedAnswer(option);
+  };
 
   const handleButtonClick = (): void => {
-    // Task3: Implement the logic for button click, such as moving to the next question.
-  } 
+    if (selectedAnswer !== null) {
+      quizCore.answerQuestion(selectedAnswer);
+    }
 
-  const { questions, currentQuestionIndex, selectedAnswer, score } = state;
-  const currentQuestion = questions[currentQuestionIndex];
+    if (quizCore.hasNextQuestion()) {
+      quizCore.nextQuestion();
+      setCurrentQuestion(quizCore.getCurrentQuestion());
+      setSelectedAnswer(null); // Reset selected answer
+    } else {
+      // No more questions
+      setScore(quizCore.getScore());
+      setIsCompleted(true);
+    }
+  };
 
-  if (!currentQuestion) {
+  const handleSubmitClick = (): void => {
+    if (selectedAnswer !== null) {
+      quizCore.answerQuestion(selectedAnswer);
+    }
+
+    setScore(quizCore.getScore());
+    setIsCompleted(true);
+  };
+
+  if (isCompleted) {
     return (
       <div>
         <h2>Quiz Completed</h2>
-        <p>Final Score: {score} out of {questions.length}</p>
+        <p>Final Score: {score} out of {quizCore.getTotalQuestions()}</p>
       </div>
     );
   }
@@ -48,25 +52,35 @@ const Quiz: React.FC = () => {
   return (
     <div>
       <h2>Quiz Question:</h2>
-      <p>{currentQuestion.question}</p>
-    
-      <h3>Answer Options:</h3>
-      <ul>
-        {currentQuestion.options.map((option) => (
-          <li
-            key={option}
-            onClick={() => handleOptionSelect(option)}
-            className={selectedAnswer === option ? 'selected' : ''}
-          >
-            {option}
-          </li>
-        ))}
-      </ul>
+      {currentQuestion && (
+        <>
+          <Question text={currentQuestion.question} />
+          <h3>Answer Options:</h3>
+          <ul>
+            {currentQuestion.options.map((option) => (
+              <AnswerOption
+                key={option}
+                option={option}
+                selected={selectedAnswer === option}
+                onSelect={handleOptionSelect}
+              />
+            ))}
+          </ul>
+          <h3>Selected Answer:</h3>
+          <p>{selectedAnswer ?? 'No answer selected'}</p>
 
-      <h3>Selected Answer:</h3>
-      <p>{selectedAnswer ?? 'No answer selected'}</p>
-
-      <button onClick={handleButtonClick}>Next Question</button>
+          {/* Button logic */}
+          {quizCore.hasNextQuestion() ? (
+            <button onClick={handleButtonClick} disabled={selectedAnswer === null}>
+              Next Question
+            </button>
+          ) : (
+            <button onClick={handleSubmitClick} disabled={selectedAnswer === null}>
+              Submit
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 };
