@@ -80,6 +80,14 @@ class QuizCore {
   public getTotalQuestions(): number {
     return this.questions.length;
   }
+
+  public previousQuestion(): void {
+    if (this.currentQuestionIndex > 0) {
+      this.currentQuestionIndex--;
+    }
+  }
+  
 }
+
 
 export default QuizCore;
