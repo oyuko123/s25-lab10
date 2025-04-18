@@ -1,17 +1,17 @@
-/* Highlight for selected answer */
+
 .selected {
-  background-color: #d1e7dd; /* light green background */
-  border-color: #0f5132;     /* darker green border */
-  color: #0f5132;            /* matching text color */
+  background-color: #d1e7dd; 
+  border-color: #0f5132;     
+  color: #0f5132;            
   font-weight: bold;
   transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-/* Interactivity for hover */
+
 .selected:hover,
 li:hover {
   cursor: pointer;
-  background-color: #cfe2ff; /* light blue on hover */
+  background-color: #cfe2ff; 
   border-color: #6ea8fe;
 }
 
